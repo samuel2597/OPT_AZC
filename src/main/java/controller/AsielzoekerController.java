@@ -1,4 +1,10 @@
 package controller;
+import jakarta.persistence.*;
+import model.Azc;
+import java.util.Scanner;
+
 public class AsielzoekerController {
-    //inzien dossier, registreren adres
+
+
+
 }
