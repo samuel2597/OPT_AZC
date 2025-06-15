@@ -9,16 +9,9 @@ import java.util.List;
 import java.util.Scanner;
 public class LandService {
     Scanner s= new Scanner(System.in);
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
 
-    public void saveLand(){
-        System.out.println("Voer land in:");
-        String land= s.nextLine();
-        System.out.println("Status land: Veilig? (ja/nee)");
-        String invoer = s.nextLine().trim().toLowerCase();
-        boolean isVeilig = invoer.equals("ja");
-
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
+    public void saveLand(String land, Boolean isVeilig){
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -33,13 +26,8 @@ public class LandService {
         }
     }
 
-    public void updateLand(){
-        getAllLands();
-        System.out.println("Geef de ID op van het Land dat u wilt bewerken. ");
-        int id= s.nextInt();
-        s.nextLine(); // consume newline
+    public void updateLand(int id, boolean isVeilig){
 
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("azc-unit");
         EntityManager em= emf.createEntityManager();
         try {
 
@@ -47,15 +35,8 @@ public class LandService {
             if(bestaandLand!= null){
                 // Start transactie
                 em.getTransaction().begin();
-                System.out.println("Voer land in:");
-                String nieuweNaam= s.nextLine();
-                System.out.println("Status land: Veilig? (ja/nee)");
-                String invoer = s.nextLine().trim().toLowerCase();
-                boolean isVeilig = invoer.equals("ja");
-
 
                 // Update velden
-                bestaandLand.setNaam(nieuweNaam);
                 bestaandLand.setVeilig(isVeilig);
 
                 //Commit

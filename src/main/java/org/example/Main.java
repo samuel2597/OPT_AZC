@@ -1,8 +1,10 @@
 package org.example;
-import services.GemeenteService;
+import controller.BeheerderController;
+import services.*;
 import services.AzcService;
 import services.LandService;
 import java.util.Scanner;
+import controller.AsielzoekerController;
 
 
 
@@ -13,7 +15,13 @@ import model.Land;
 public class Main {
 
     public static void main(String[] args) {
-        GemeenteService gemeente= new GemeenteService();
-        gemeente.deleteGemeente();
+
+//        DossierServices dossierServices= new DossierServices();
+//        dossierServices.registreerAsielzoeker();
+        BeheerderController beheerderController= new BeheerderController();
+        beheerderController.azcVerwijderen();
+
+
+
     }
 }

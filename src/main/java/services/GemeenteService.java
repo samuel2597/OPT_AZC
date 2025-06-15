@@ -7,24 +7,11 @@ import java.util.Scanner;
 public class GemeenteService {
 
     Scanner s= new Scanner(System.in);
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
 
-//    private final String naam;
-//    private int aantalInwoners;
-//    private int aangebodenPlaatsen;
 
-    public void saveGemeente() {
-        System.out.println("Voer de naam van de gemeente in:");
-        String naamGemeente = s.nextLine();
+    public void saveGemeente(String naamGemeente, int aantalInwoners, int aangebodenPlaatsen) {
 
-        System.out.println("Voer het aantal inwoners in:");
-        int aantalInwoners = s.nextInt();
-        s.nextLine(); // consume newline
-
-        System.out.println("Voer het aantal aangeboden plaatsen in:");
-        int aangebodenPlaatsen = s.nextInt();
-        s.nextLine(); // consume newline
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -39,31 +26,14 @@ public class GemeenteService {
         }
     }
 
-    public void updateGemeente(){
-        getAllGemeente();
-        System.out.println("Geef de ID op van het Gemeente dat u wilt bewerken.");
-        int id= s.nextInt();
-        s.nextLine();
+    public void updateGemeente(int id, int nieuweInwoners, int nieuweAangebodenPlaatsen){
 
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("azc-unit");
         EntityManager em= emf.createEntityManager();
         try {
             Gemeente bestaandGemeente= em.find(Gemeente.class,id);
 
             if (bestaandGemeente != null) {
-                em.getTransaction().begin();
-                System.out.println("Voer de nieuwe naam van de gemeente in:");
-                String nieuweNaam = s.nextLine();
 
-                System.out.println("Voer het nieuwe aantal inwoners in:");
-                int nieuweInwoners = s.nextInt();
-                s.nextLine();
-
-                System.out.println("Voer het nieuwe aantal aangeboden plaatsen in:");
-                int nieuweAangebodenPlaatsen = s.nextInt();
-                s.nextLine();
-
-                bestaandGemeente.setNaam(nieuweNaam);
                 bestaandGemeente.setAantalInwoners(nieuweInwoners);
                 bestaandGemeente.setAangebodenPlaatsen(nieuweAangebodenPlaatsen);
                 em.getTransaction().commit();
@@ -109,6 +79,9 @@ public class GemeenteService {
 
 
     }
+
+
+
     public void getAllGemeente() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
         EntityManager em = emf.createEntityManager();
