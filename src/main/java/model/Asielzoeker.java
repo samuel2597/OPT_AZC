@@ -3,6 +3,7 @@ import model.Land;
 import jakarta.persistence.*;
 
 @Entity
+@DiscriminatorValue("Asielzoeker")
 public class Asielzoeker extends Gebruiker {
 
     private String naam;

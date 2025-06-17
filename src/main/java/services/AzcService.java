@@ -4,39 +4,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import model.Gemeente;
-import services.GemeenteService;
 import model.Azc;
-
 import java.util.List;
 import java.util.Scanner;
 
 public class AzcService {
-    Azc azc;
-    GemeenteService gemeenteService= new GemeenteService();
     Scanner s = new Scanner(System.in);
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
 
 
     public void saveAzc(String straat, int nummer, String postcode,long gemeenteId) {
-
-
-//        System.out.print("Voer straat in: ");
-//        String straat = s.nextLine();
-//
-//        System.out.print("Voer nummer in: ");
-//        int nummer = s.nextInt();
-//        s.nextLine(); // consume newline
-//
-//        System.out.print("Voer postcode in: ");
-//        String postcode = s.nextLine();
-//
-//        System.out.println("Toon beschikbare Gemeente:");
-//        gemeenteService.getAllGemeente();
-//
-//        System.out.println("Voer land-ID in:");
-//        long gemeenteId = s.nextLong();
-//        s.nextLine();
-
 
         EntityManager em = emf.createEntityManager();
 
@@ -49,7 +26,6 @@ public class AzcService {
             System.out.println("AZC opgeslagen!");
         } finally {
             em.close();
-            emf.close();
         }
     }
 
@@ -80,7 +56,6 @@ public class AzcService {
 
         } finally {
             em.close();
-            emf.close();
         }
     }
 
@@ -121,7 +96,6 @@ public class AzcService {
             }
         } finally {
             em.close();
-            emf.close();
         }
 
 

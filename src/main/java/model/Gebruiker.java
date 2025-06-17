@@ -3,7 +3,9 @@ package model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "account_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Gebruiker {
 
     @Id
@@ -33,6 +35,10 @@ public abstract class Gebruiker {
 
     // JPA vereist een lege constructor
     protected Gebruiker() {}
+
+    public void setWachtwoord(String wachtwoord) {
+        this.wachtwoord = wachtwoord;
+    }
 
     // Getters
     public Long getId() {

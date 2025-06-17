@@ -23,7 +23,7 @@ public class BeheerderController {
     }
 
     public void landVeiligheidsstatusWijzigen() {
-        gemeenteService.getAllGemeente();
+        landService.getAllLands();
         System.out.print("Voer het ID van het land in: ");
         int landId = scanner.nextInt();
         scanner.nextLine();

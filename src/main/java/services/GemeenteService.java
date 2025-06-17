@@ -1,7 +1,7 @@
 package services;
 import jakarta.persistence.*;
 import model.Gemeente;
-
+import model.Azc;
 import java.util.List;
 import java.util.Scanner;
 public class GemeenteService {
@@ -22,7 +22,6 @@ public class GemeenteService {
             System.out.println("Gemeente succesvol opgeslagen.");
         } finally {
             em.close();
-            emf.close();
         }
     }
 
@@ -44,46 +43,13 @@ public class GemeenteService {
         }
         finally {
             em.close();
-            emf.close();
         }
-
-    }
-
-    public void deleteGemeente(){
-        getAllGemeente();
-        System.out.println("Geef de ID op van het Gemeente dat u wilt verwijder.");
-        int id= s.nextInt();
-        s.nextLine();
-
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("azc-unit");
-        EntityManager em= emf.createEntityManager();
-        try {
-            Gemeente verwijderGemeente= em.find(Gemeente.class, id);
-            if(verwijderGemeente!= null){
-            em.getTransaction().begin();
-
-            em.remove(verwijderGemeente);
-            em.getTransaction().commit();
-                System.out.println("Gemeente succesvol verwijderd.");
-            }
-            else {
-                System.out.println("Geen Gemeente gevonden met ID: " + id);
-            }
-
-        }
-        finally {
-            em.close();
-            emf.close();
-        }
-
-
 
     }
 
 
 
     public void getAllGemeente() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -98,7 +64,54 @@ public class GemeenteService {
             }
         } finally {
             em.close();
-            emf.close();
+        }
+    }
+
+    public void uitkeringsRapportage() {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            List<Gemeente> gemeenten = em.createQuery("SELECT g FROM Gemeente g", Gemeente.class).getResultList();
+
+            System.out.println("\nUitkeringsrapportage per Gemeente");
+            System.out.println("═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════");
+            System.out.println("║ Gemeente               ║ Inwoners   ║ Plekken    ║ Asielzoekers       ║ Bezettingsgraad    ║ Verplichte opvang ║ Uitkering (€)      ║");
+            System.out.println("╠════════════════════════╬════════════╬════════════╬════════════════════╬════════════════════╬════════════════════╬════════════════════╣");
+
+            for (Gemeente g : gemeenten) {
+                // Ophalen van alle AZC's binnen deze gemeente
+                List<Azc> azcs = em.createQuery("SELECT a FROM Azc a WHERE a.gemeente = :gemeente", Azc.class)
+                        .setParameter("gemeente", g)
+                        .getResultList();
+
+                int totaalAsielzoekers = azcs.stream().mapToInt(a -> a.getAsielzoekers().size()).sum();
+                double bezettingsgraad = g.getAangebodenPlaatsen() > 0
+                        ? (double) totaalAsielzoekers / g.getAangebodenPlaatsen() * 100
+                        : 0;
+                long verplichteOpvang = Math.round(g.getAantalInwoners() * 0.005);
+                long extra = totaalAsielzoekers - verplichteOpvang;
+
+                int uitkering = 0;
+                if (extra > 100) {
+                    uitkering = 2000;
+                } else if (extra > 0) {
+                    uitkering = 1000;
+                }
+
+                System.out.printf("║ %-22s ║ %-10d ║ %-10d ║ %-18d ║ %-18.1f%% ║ %-18d ║ %-18d ║%n",
+                        g.getNaam(),
+                        g.getAantalInwoners(),
+                        g.getAangebodenPlaatsen(),
+                        totaalAsielzoekers,
+                        bezettingsgraad,
+                        verplichteOpvang,
+                        uitkering);
+            }
+
+            System.out.println("╚════════════════════════╩════════════╩════════════╩════════════════════╩════════════════════╩════════════════════╩════════════════════╝");
+
+        } finally {
+            em.close();
         }
     }
 

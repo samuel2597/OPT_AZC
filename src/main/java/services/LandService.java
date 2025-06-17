@@ -1,12 +1,9 @@
 package services;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.*;
 import model.Land;
-
 import java.util.List;
 import java.util.Scanner;
+
 public class LandService {
     Scanner s= new Scanner(System.in);
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
@@ -22,7 +19,6 @@ public class LandService {
             System.out.println("Land opgeslagen!");
         } finally {
             em.close();
-            emf.close();
         }
     }
 
@@ -50,7 +46,6 @@ public class LandService {
         }
         finally {
             em.close();
-            emf.close();
         }
 
 
@@ -80,7 +75,6 @@ public class LandService {
         }
         finally {
             em.close();
-            emf.close();
         }
 
     }
@@ -100,7 +94,6 @@ public class LandService {
         }
         finally {
             em.close();
-            emf.close();
         }
     }
 }

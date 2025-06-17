@@ -13,4 +13,13 @@ public enum AccountRol {
     public int getWaarde() {
         return waarde;
     }
+    public static AccountRol fromString(String rolNaam) {
+        for (AccountRol rol : AccountRol.values()) {
+            if (rol.name().equalsIgnoreCase(rolNaam)) {
+                return rol;
+            }
+        }
+        throw new IllegalArgumentException("Onbekende rol: " + rolNaam);
+    }
+
 }

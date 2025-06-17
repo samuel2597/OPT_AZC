@@ -1,5 +1,6 @@
 package controller;
 
+import model.Asielzoeker;
 import model.Azc;
 import model.Gemeente;
 import services.PlaatsingService;
@@ -7,7 +8,6 @@ import services.DossierServices;
 import services.GemeenteService;
 import services.LandService;
 import model.Land;
-
 import java.util.List;
 import java.util.Scanner;
 import jakarta.persistence.*;
@@ -17,6 +17,7 @@ public class CoaMedewerkerController {
     DossierServices dossierServices = new DossierServices();
     PlaatsingService plaatsingService = new PlaatsingService();
     LandService landService = new LandService();
+    AccountController accountController= new AccountController();
     GemeenteService gemeenteService= new GemeenteService();
 
     private final Scanner scanner = new Scanner(System.in);
@@ -131,37 +132,52 @@ public class CoaMedewerkerController {
         }
         finally {
             em.close();
-            emf.close();
         }
     }
 
     public void UpdateDossier() {
+        accountController.readAccountbyrolAsiel();
         System.out.print("Voer het ID van de asielzoeker in: ");
         long asielzoekerId = scanner.nextLong();
         scanner.nextLine();
 
-        System.out.print("Is het paspoort getoond? (ja/nee): ");
-        boolean paspoortGetoond = scanner.nextLine().trim().equalsIgnoreCase("ja");
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Controleer of het opgegeven ID echt bij een Asielzoeker hoort
+            Asielzoeker asielzoeker = em.find(Asielzoeker.class, asielzoekerId);
 
-        System.out.print("Is de aanvraag compleet aangeleverd? (ja/nee): ");
-        boolean aanvraagCompleet = scanner.nextLine().trim().equalsIgnoreCase("ja");
+            if (asielzoeker == null) {
+                System.out.println("❌ Geen asielzoeker gevonden met dat ID.");
+                return;
+            }
 
-        System.out.print("Is er een rechter toegewezen? (ja/nee): ");
-        boolean rechterToegewezen = scanner.nextLine().trim().equalsIgnoreCase("ja");
+            System.out.print("Is het paspoort getoond? (ja/nee): ");
+            boolean paspoortGetoond = scanner.nextLine().trim().equalsIgnoreCase("ja");
 
-        System.out.print("Heeft de rechter een uitspraak gedaan? (ja/nee): ");
-        boolean uitspraakGedaan = scanner.nextLine().trim().equalsIgnoreCase("ja");
+            System.out.print("Is de aanvraag compleet aangeleverd? (ja/nee): ");
+            boolean aanvraagCompleet = scanner.nextLine().trim().equalsIgnoreCase("ja");
 
-        System.out.print("Wat is de uitspraak van de rechter (Toegelaten/Niet-toegelaten): ");
-        String uitspraak = scanner.nextLine().trim();
+            System.out.print("Is er een rechter toegewezen? (ja/nee): ");
+            boolean rechterToegewezen = scanner.nextLine().trim().equalsIgnoreCase("ja");
 
-        System.out.print("Is de vluchteling teruggekeerd naar het land van herkomst? (ja/nee): ");
-        boolean teruggekeerd = scanner.nextLine().trim().equalsIgnoreCase("ja");
+            System.out.print("Heeft de rechter een uitspraak gedaan? (ja/nee): ");
+            boolean uitspraakGedaan = scanner.nextLine().trim().equalsIgnoreCase("ja");
 
-        System.out.print("Wat is de plaatsingsstatus? (nee/gestart/afgerond): ");
-        String plaatsingStatus = scanner.nextLine().trim();
+            System.out.print("Wat is de uitspraak van de rechter (Toegelaten/Niet-toegelaten): ");
+            String uitspraak = scanner.nextLine().trim();
 
-        dossierServices.updateDossier(asielzoekerId, paspoortGetoond, aanvraagCompleet, rechterToegewezen,
-                uitspraakGedaan, uitspraak, teruggekeerd, plaatsingStatus);
+            System.out.print("Is de vluchteling teruggekeerd naar het land van herkomst? (ja/nee): ");
+            boolean teruggekeerd = scanner.nextLine().trim().equalsIgnoreCase("ja");
+
+            System.out.print("Wat is de plaatsingsstatus? (nee/gestart/afgerond): ");
+            String plaatsingStatus = scanner.nextLine().trim();
+
+            // Pas het dossier aan via de service
+            dossierServices.updateDossier(asielzoekerId, paspoortGetoond, aanvraagCompleet,
+                    rechterToegewezen, uitspraakGedaan, uitspraak, teruggekeerd, plaatsingStatus);
+        } finally {
+            em.close();
+        }
     }
+
 }

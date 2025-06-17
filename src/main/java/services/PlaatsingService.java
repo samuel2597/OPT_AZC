@@ -1,12 +1,10 @@
 // Plaats deze klasse in: src/main/java/services/PlaatsingService.java
 package services;
-
 import jakarta.persistence.*;
 import model.*;
 import java.util.*;
 
 public class PlaatsingService {
-    GemeenteService gemeenteService= new GemeenteService();
     private final Scanner s = new Scanner(System.in);
     private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
 
