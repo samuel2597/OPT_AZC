@@ -67,6 +67,11 @@ public class Asielzoeker extends Gebruiker implements Observer{
         this.notificatie = null;
     }
 
+    public AccountRol getRol() {
+
+        return AccountRol.Asielzoeker;
+    }
+
     @ManyToOne
     private Azc huidigeAzc;
 
