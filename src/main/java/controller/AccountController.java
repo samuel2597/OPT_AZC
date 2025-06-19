@@ -164,7 +164,5 @@ public class AccountController  {
         }
     }
 
-    public void deleteAccount(){
 
-    }
 }

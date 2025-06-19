@@ -1,10 +1,11 @@
 package model;
 import model.Land;
 import jakarta.persistence.*;
+import model.Observer;
 
 @Entity
 @DiscriminatorValue("Asielzoeker")
-public class Asielzoeker extends Gebruiker {
+public class Asielzoeker extends Gebruiker implements Observer{
 
     private String naam;
     private boolean heeftVerblijfsvergunning = false;
@@ -13,6 +14,7 @@ public class Asielzoeker extends Gebruiker {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Dossier dossier;
+    private String notificatie;
 
 
 
@@ -50,6 +52,19 @@ public class Asielzoeker extends Gebruiker {
 
     public Land getLand() {
         return land;
+    }
+    //observer
+    @Override
+    public void update(String bericht) {
+        this.notificatie = bericht;
+    }
+
+    public String getNotificatie() {
+        return notificatie;
+    }
+
+    public void clearNotificatie() {
+        this.notificatie = null;
     }
 
     @ManyToOne

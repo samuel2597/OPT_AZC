@@ -58,12 +58,12 @@ public class CoaMedewerkerController {
             System.out.println("Asielzoeker succesvol geregistreerd.");
         } finally {
             em.close();
-            emf.close();
         }
     }
 
     public void plaatsAsielzoeker() {
         EntityManager em = emf.createEntityManager();
+        accountController.readAccountbyrolAsiel();
 
         try {
             System.out.print("Voer het ID van de asielzoeker in: ");
@@ -106,6 +106,7 @@ public class CoaMedewerkerController {
     public void VerplaatsAsiel() {
         EntityManager em = emf.createEntityManager();
         try {
+            accountController.readAccountbyrolAsiel();
             System.out.print("Voer het ID van de asielzoeker in: ");
             long asielzoekerId = scanner.nextLong();
             scanner.nextLine();

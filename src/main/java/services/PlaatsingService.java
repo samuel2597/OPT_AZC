@@ -2,11 +2,32 @@
 package services;
 import jakarta.persistence.*;
 import model.*;
+import model.Observable;
+import model.Observer;
+
 import java.util.*;
 
-public class PlaatsingService {
+public class PlaatsingService implements Observable {
     private final Scanner s = new Scanner(System.in);
     private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
+    private final List<Observer> observers = new ArrayList<>();
+
+    @Override
+    public void attach(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void detach(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers(String bericht) {
+        for (Observer o : observers) {
+            o.update(bericht);
+        }
+    }
 
     public void plaatsAsielzoekerMetKeuze(long asielzoekerId, long azcId) {
         EntityManager em = emf.createEntityManager();
@@ -57,6 +78,12 @@ public class PlaatsingService {
             em.merge(asielzoeker);
 
             em.getTransaction().commit();
+            String msg = "✅ Je bent geplaatst in AZC " +
+                    nieuwAzc.getStraat() + " in " + gekozenGemeente.getNaam();
+            attach(asielzoeker); // ✅ observer toevoegen
+            notifyObservers(msg); // ← notificatie sturen
+            detach(asielzoeker); // ← observer verwijderen
+            em.merge(asielzoeker);
 
             System.out.println("Asielzoeker succesvol geplaatst in AZC (" + nieuwAzc.getStraat() + ") van gemeente " + gekozenGemeente.getNaam());
         } finally {
@@ -106,6 +133,15 @@ public class PlaatsingService {
             nieuwAzc.voegAsielzoekerToe(asielzoeker);
             asielzoeker.setHuidigeAzc(nieuwAzc);
 
+            // ✅ Observer pattern toepassen
+            attach(asielzoeker);
+            String bericht = "📦 Je bent verplaatst naar AZC " + nieuwAzc.getStraat() + " in " + nieuwAzc.getGemeente().getNaam();
+            notifyObservers(bericht);
+            detach(asielzoeker);
+
+            // Notificatie opslaan in database
+            em.merge(asielzoeker);
+
             Gemeente nieuweGemeente = nieuwAzc.getGemeente();
             nieuweGemeente.setAantalInwoners(nieuweGemeente.getAantalInwoners() + 1);
             nieuweGemeente.setAangebodenPlaatsen(nieuweGemeente.getAangebodenPlaatsen() - 1);
@@ -142,7 +178,7 @@ public class PlaatsingService {
 
 
 
-    private Gemeente zoekGemeenteMetMeesteBeschikbarePlekken(EntityManager em) {
+    protected Gemeente zoekGemeenteMetMeesteBeschikbarePlekken(EntityManager em) {
         List<Gemeente> gemeenten = em.createQuery("SELECT g FROM Gemeente g", Gemeente.class).getResultList();
         Gemeente beste = null;
         int maxBeschikbaar = -1;
@@ -158,7 +194,7 @@ public class PlaatsingService {
         return (maxBeschikbaar > 0) ? beste : null;
     }
 
-    private Gemeente zoekGemeenteOpBasisVanSpreidingswet(EntityManager em) {
+    protected Gemeente zoekGemeenteOpBasisVanSpreidingswet(EntityManager em) {
         List<Gemeente> gemeenten = em.createQuery("SELECT g FROM Gemeente g", Gemeente.class).getResultList();
         Gemeente minst = null;
         double laagsteRatio = Double.MAX_VALUE;
@@ -173,7 +209,7 @@ public class PlaatsingService {
         return minst;
     }
 
-    private int telAantalAsielzoekersInGemeente(EntityManager em, Gemeente g) {
+    protected int telAantalAsielzoekersInGemeente(EntityManager em, Gemeente g) {
         List<Azc> azcs = em.createQuery("SELECT a FROM Azc a WHERE a.gemeente = :gemeente", Azc.class)
                 .setParameter("gemeente", g)
                 .getResultList();

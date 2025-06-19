@@ -9,8 +9,10 @@ import java.util.*;
 
 public class DossierServices {
 
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
+
     public void registreerAsielzoeker(String naam, String email, String wachtwoord, Land gekozenLand, boolean heeftPaspoort) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
+
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -25,7 +27,6 @@ public class DossierServices {
     }
 
     public void updateDossier(long asielzoekerId, boolean paspoortGetoond, boolean aanvraagCompleet, boolean rechterToegewezen, boolean uitspraakGedaan, String uitspraak, boolean teruggekeerd, String plaatsingStatus) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("azc-unit");
         EntityManager em = emf.createEntityManager();
 
         try {

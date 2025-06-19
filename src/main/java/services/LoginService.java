@@ -1,5 +1,6 @@
 package services;
 import jakarta.persistence.*;
+import model.Asielzoeker;
 import model.Gebruiker;
 import model.Session;
 import java.util.Scanner;
@@ -31,6 +32,13 @@ public void login() {
         // Inloggen
         Session.getInstance().login(gebruiker.getId(), gebruiker.getRol());
         System.out.println("✅ Ingelogd als: " + gebruiker.getRol());
+        if (gebruiker instanceof Asielzoeker asielzoeker) {
+            if (asielzoeker.getNotificatie() != null) {
+                System.out.println("📬 Bericht: " + asielzoeker.getNotificatie());
+                asielzoeker.clearNotificatie(); // eenmalig tonen
+            }
+        }
+
 
     } catch (NoResultException e) {
         System.out.println("❌ Geen gebruiker gevonden met dat e-mailadres.");
